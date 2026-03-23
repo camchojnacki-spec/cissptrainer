@@ -1,5 +1,6 @@
-// 60-day CISSP study plan
-export const STUDY_PLAN = [
+import type { StudyDay } from '../types/study';
+
+export const STUDY_PLAN: StudyDay[] = [
   // Week 1-2: Domain 1 - Security and Risk Management (15%)
   { day: 1, domain: 1, title: 'CIA Triad & Security Governance', tasks: ['Study CIA Triad concepts', 'Review security governance principles', 'Complete 10 practice questions'], hours: 2 },
   { day: 2, domain: 1, title: 'Legal & Regulatory Frameworks', tasks: ['Study GDPR, HIPAA, SOX', 'Review compliance requirements', 'Complete 10 practice questions'], hours: 2 },

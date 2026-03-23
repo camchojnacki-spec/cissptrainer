@@ -1,4 +1,6 @@
-export const DOMAINS = [
+import type { Domain } from '../types/domain';
+
+export const DOMAINS: Domain[] = [
   {
     id: 1,
     name: 'Security and Risk Management',
@@ -20,7 +22,7 @@ export const DOMAINS = [
       'Security awareness and training',
     ],
     studyTips: [
-      'Focus heavily on risk management formulas: SLE = AV × EF, ALE = SLE × ARO',
+      'Focus heavily on risk formulas: SLE = AV × EF, ALE = SLE × ARO',
       'Understand the difference between policies, standards, baselines, procedures, and guidelines',
       'Know the ISC² Code of Ethics by heart - it appears frequently on the exam',
       'Study BCP/DRP lifecycle phases thoroughly',
@@ -171,7 +173,7 @@ export const DOMAINS = [
     studyTips: [
       'Know evidence types: real, direct, circumstantial, hearsay, best',
       'Understand RPO vs RTO vs MTD vs MTTF vs MTTR',
-      'Study incident response phases: preparation, detection, containment, eradication, recovery, lessons learned',
+      'Study IR phases: preparation, detection, containment, eradication, recovery, lessons learned',
       'Focus on backup types and rotation schemes',
     ],
   },
@@ -197,7 +199,7 @@ export const DOMAINS = [
       'Know OWASP Top 10 inside and out',
       'Understand where security fits in each SDLC phase',
       'Study database concepts: normalization, ACID, polyinstantiation',
-      'Focus on common software vulnerabilities: buffer overflow, XSS, SQLi, CSRF',
+      'Focus on common vulnerabilities: buffer overflow, XSS, SQLi, CSRF',
     ],
   },
 ];

@@ -1,7 +1,6 @@
-// Comprehensive CISSP Question Bank
-// Each question includes domain, difficulty, explanation, and references
+import type { Question } from '../types/question';
 
-export const QUESTIONS = [
+export const QUESTIONS: Question[] = [
   // ===== DOMAIN 1: Security and Risk Management =====
   {
     id: 1,
