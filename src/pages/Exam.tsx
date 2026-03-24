@@ -375,22 +375,28 @@ export default function Exam() {
           <ArrowLeft className="w-4 h-4" /> Previous
         </Button>
 
-        <div className="hidden md:flex gap-1 flex-wrap justify-center max-w-md">
-          {examQuestions.slice(0, 20).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`w-7 h-7 rounded text-xs font-medium transition-colors ${
-                i === currentIndex ? 'bg-primary text-white'
-                : answers[i] !== undefined ? 'bg-success-muted text-success'
-                : flagged.has(i) ? 'bg-warning-muted text-warning'
-                : 'bg-surface-elevated text-foreground-subtle'
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          {examQuestions.length > 20 && <span className="text-foreground-subtle text-xs self-center">...</span>}
+        <div className="hidden md:flex gap-1 flex-wrap justify-center max-w-lg">
+          {examQuestions.map((_, i) => {
+            const isCurrent = i === currentIndex;
+            const isAnswered = answers[i] !== undefined;
+            const isFlagged = flagged.has(i);
+
+            let bgClass = 'bg-surface-elevated text-foreground-subtle';
+            if (isCurrent) bgClass = 'bg-primary text-white';
+            else if (isAnswered && isFlagged) bgClass = 'bg-success-muted text-success ring-2 ring-warning';
+            else if (isAnswered) bgClass = 'bg-success-muted text-success';
+            else if (isFlagged) bgClass = 'bg-warning-muted text-warning ring-2 ring-warning';
+
+            return (
+              <button
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                className={`w-7 h-7 rounded text-xs font-medium transition-colors ${bgClass}`}
+              >
+                {i + 1}
+              </button>
+            );
+          })}
         </div>
 
         <Button variant="ghost" onClick={() => setCurrentIndex(Math.min(examQuestions.length - 1, currentIndex + 1))} disabled={currentIndex === examQuestions.length - 1}>

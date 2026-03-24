@@ -27,7 +27,8 @@ interface ShellProps {
 export default function Shell({ children }: ShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const completedDays = useAppStore((s) => s.completedDays);
+  const getStudyStreak = useAppStore((s) => s.getStudyStreak);
+  const streak = getStudyStreak();
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -70,7 +71,7 @@ export default function Shell({ children }: ShellProps) {
         <div className="p-4 border-t border-border">
           <div className="bg-surface-elevated/50 rounded-lg p-4">
             <p className="text-xs text-foreground-muted mb-1">Study Streak</p>
-            <p className="text-2xl font-bold text-foreground">{completedDays.length} days</p>
+            <p className="text-2xl font-bold text-foreground">{streak} days</p>
           </div>
         </div>
       </aside>

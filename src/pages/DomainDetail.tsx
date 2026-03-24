@@ -131,7 +131,7 @@ export default function DomainDetail() {
         </CardContent>
       </Card>
 
-      <Link to="/practice">
+      <Link to={`/practice?domain=${domain.id}`}>
         <Button size="lg" className="w-full">
           Practice Domain {domain.id} Questions
         </Button>

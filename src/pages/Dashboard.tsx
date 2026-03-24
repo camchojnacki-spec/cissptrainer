@@ -10,7 +10,7 @@ import ProgressBar from '../components/ui/ProgressBar';
 import StatCard from '../components/ui/StatCard';
 
 export default function Dashboard() {
-  const { questionHistory, examHistory, completedDays, domainProgress } = useAppStore();
+  const { questionHistory, examHistory, domainProgress, getStudyDaysCount } = useAppStore();
 
   const totalQuestions = questionHistory.length;
   const correctAnswers = questionHistory.filter((q) => q.correct).length;
@@ -18,6 +18,7 @@ export default function Dashboard() {
   const bestExamScore = examHistory.length > 0
     ? Math.max(...examHistory.map((e) => Math.round((e.score / e.total) * 100)))
     : 0;
+  const studyDays = getStudyDaysCount();
 
   return (
     <div className="space-y-8">
@@ -30,7 +31,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Target} label="Questions Practiced" value={totalQuestions} color="blue" />
         <StatCard icon={TrendingUp} label="Accuracy" value={`${accuracy}%`} color="green" />
-        <StatCard icon={BookOpen} label="Study Days" value={completedDays.length} color="purple" />
+        <StatCard icon={BookOpen} label="Study Days" value={studyDays} color="purple" />
         <StatCard icon={Award} label="Best Exam" value={examHistory.length > 0 ? `${bestExamScore}%` : '--'} color="amber" />
       </div>
 

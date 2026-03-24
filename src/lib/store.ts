@@ -23,6 +23,10 @@ interface AppState {
   recordAnswer: (questionId: number, domain: number, isCorrect: boolean) => void;
   recordExam: (result: ExamResult) => void;
   resetProgress: () => void;
+
+  // Computed helpers
+  getStudyDaysCount: () => number;
+  getStudyStreak: () => number;
 }
 
 const initialDomainProgress: Record<number, DomainProgress> = {
@@ -36,9 +40,47 @@ const initialDomainProgress: Record<number, DomainProgress> = {
   8: { studied: 0, correct: 0, total: 0 },
 };
 
+function getDistinctDays(history: QuestionHistoryEntry[]): string[] {
+  const daySet = new Set<string>();
+  for (const entry of history) {
+    daySet.add(new Date(entry.timestamp).toDateString());
+  }
+  return [...daySet].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+}
+
+function computeStreak(history: QuestionHistoryEntry[]): number {
+  if (history.length === 0) return 0;
+
+  const days = getDistinctDays(history);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const lastDay = new Date(days[days.length - 1]);
+  lastDay.setHours(0, 0, 0, 0);
+
+  // If last activity wasn't today or yesterday, streak is 0
+  const diffFromToday = Math.floor((today.getTime() - lastDay.getTime()) / 86400000);
+  if (diffFromToday > 1) return 0;
+
+  let streak = 1;
+  for (let i = days.length - 1; i > 0; i--) {
+    const current = new Date(days[i]);
+    const previous = new Date(days[i - 1]);
+    current.setHours(0, 0, 0, 0);
+    previous.setHours(0, 0, 0, 0);
+    const diff = Math.floor((current.getTime() - previous.getTime()) / 86400000);
+    if (diff === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       studyDay: 1,
       studyStartDate: null,
       completedDays: [],
@@ -56,7 +98,12 @@ export const useAppStore = create<AppState>()(
             ? state.completedDays.filter((d) => d !== day)
             : [...state.completedDays, day];
           const maxCompleted = Math.max(...newCompleted, 0);
-          return { completedDays: newCompleted, studyDay: maxCompleted + 1 };
+          return {
+            completedDays: newCompleted,
+            studyDay: maxCompleted + 1,
+            // Auto-start study plan on first day completion
+            studyStartDate: state.studyStartDate || new Date().toISOString(),
+          };
         }),
 
       recordAnswer: (questionId: number, domain: number, isCorrect: boolean) =>
@@ -77,12 +124,16 @@ export const useAppStore = create<AppState>()(
           return {
             questionHistory: [...state.questionHistory, entry],
             domainProgress: dp,
+            // Auto-initialize study start date on first activity
+            studyStartDate: state.studyStartDate || new Date().toISOString(),
           };
         }),
 
       recordExam: (result: ExamResult) =>
         set((state) => ({
           examHistory: [...state.examHistory, result],
+          // Auto-initialize on exam too
+          studyStartDate: state.studyStartDate || new Date().toISOString(),
         })),
 
       resetProgress: () =>
@@ -94,6 +145,14 @@ export const useAppStore = create<AppState>()(
           domainProgress: { ...initialDomainProgress },
           examHistory: [],
         }),
+
+      getStudyDaysCount: () => {
+        return getDistinctDays(get().questionHistory).length;
+      },
+
+      getStudyStreak: () => {
+        return computeStreak(get().questionHistory);
+      },
     }),
     { name: 'cissp-trainer' }
   )

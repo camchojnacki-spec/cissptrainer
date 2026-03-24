@@ -55,8 +55,13 @@ export default function Analytics() {
   const totalCorrect = questionHistory.filter((q) => q.correct).length;
   const overallAccuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
-  const weakestDomains = [...domainData].filter((d) => d.attempted > 0).sort((a, b) => a.accuracy - b.accuracy).slice(0, 3);
-  const strongestDomains = [...domainData].filter((d) => d.attempted > 0).sort((a, b) => b.accuracy - a.accuracy).slice(0, 3);
+  const practicedDomains = domainData.filter((d) => d.attempted > 0);
+  const weakestDomains = practicedDomains.length >= 2
+    ? [...practicedDomains].filter((d) => d.accuracy < 70).sort((a, b) => a.accuracy - b.accuracy).slice(0, 3)
+    : [];
+  const strongestDomains = practicedDomains.length >= 2
+    ? [...practicedDomains].filter((d) => d.accuracy >= 70).sort((a, b) => b.accuracy - a.accuracy).slice(0, 3)
+    : [];
 
   if (totalQuestions === 0) {
     return (
@@ -170,44 +175,56 @@ export default function Analytics() {
       </div>
 
       {/* Strengths / Weaknesses */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {weakestDomains.length > 0 && (
+      {practicedDomains.length < 2 ? (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-foreground-muted">Practice at least 2 domains to see strengths and weaknesses breakdown.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="border-destructive/20">
             <CardContent>
               <div className="flex items-center gap-2 mb-4">
                 <TrendingDown className="w-5 h-5 text-destructive" />
                 <h3 className="text-lg font-semibold text-foreground">Needs Improvement</h3>
               </div>
-              <div className="space-y-3">
-                {weakestDomains.map((d) => (
-                  <div key={d.name} className="flex items-center justify-between p-3 bg-surface-elevated/50 rounded-lg">
-                    <span className="text-sm text-foreground-muted">{d.fullName}</span>
-                    <span className="text-sm font-medium text-destructive">{d.accuracy}%</span>
-                  </div>
-                ))}
-              </div>
+              {weakestDomains.length > 0 ? (
+                <div className="space-y-3">
+                  {weakestDomains.map((d) => (
+                    <div key={d.name} className="flex items-center justify-between p-3 bg-surface-elevated/50 rounded-lg">
+                      <span className="text-sm text-foreground-muted">{d.fullName}</span>
+                      <span className="text-sm font-medium text-destructive">{d.accuracy}%</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-foreground-muted">All domains above 70% — nice work!</p>
+              )}
             </CardContent>
           </Card>
-        )}
-        {strongestDomains.length > 0 && (
           <Card className="border-success/20">
             <CardContent>
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-5 h-5 text-success" />
                 <h3 className="text-lg font-semibold text-foreground">Strongest Areas</h3>
               </div>
-              <div className="space-y-3">
-                {strongestDomains.map((d) => (
-                  <div key={d.name} className="flex items-center justify-between p-3 bg-surface-elevated/50 rounded-lg">
-                    <span className="text-sm text-foreground-muted">{d.fullName}</span>
-                    <span className="text-sm font-medium text-success">{d.accuracy}%</span>
-                  </div>
-                ))}
-              </div>
+              {strongestDomains.length > 0 ? (
+                <div className="space-y-3">
+                  {strongestDomains.map((d) => (
+                    <div key={d.name} className="flex items-center justify-between p-3 bg-surface-elevated/50 rounded-lg">
+                      <span className="text-sm text-foreground-muted">{d.fullName}</span>
+                      <span className="text-sm font-medium text-success">{d.accuracy}%</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-foreground-muted">Keep practicing to get domains above 70%.</p>
+              )}
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
