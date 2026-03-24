@@ -6,6 +6,7 @@ import {
   HelpCircle,
   ClipboardList,
   BarChart3,
+  Settings,
   Shield,
   Menu,
   X,
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { path: '/practice', label: 'Practice', icon: HelpCircle },
   { path: '/exam', label: 'Mock Exam', icon: ClipboardList },
   { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { path: '/settings', label: 'Settings', icon: Settings },
 ] as const;
 
 interface ShellProps {
